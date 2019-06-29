@@ -22,11 +22,18 @@ const userSchema = new Schema({
   },
   status: {
     type: String,
-    default: 'user'
+    default: "user"
   },
   isAuthEmail: {
+    isAuth: {
       type: Boolean,
+      required: false,
       default: false
+    },
+    tokenId: {
+      type: String,
+      required: false
+    }
   }
 });
 

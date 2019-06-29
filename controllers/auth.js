@@ -5,50 +5,40 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator/check");
 
-const nodemailer = require("nodemailer");
-const sendgrid = require("nodemailer-sendgrid-transport");
+const config = require('../config');
 
-const transporter = nodemailer.createTransport(
-  sendgrid({
-    auth: {
-      api_key:
-      process.env.MAIL_API
-    }
-  })
-);
 
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+
   User.findOne({ email: email })
     .then(user => {
-      if(user) {
-      const error = new Error('User with given email already exists');
-      error.statusCode = 401;
-      throw error;
+      if (user) {
+        const error = new Error("User with given email already exists");
+        error.statusCode = 401;
+        throw error;
       }
-      return bcrypt.hash(password,12 )
+      bcrypt
+        .hash(password, 12)
+        .then(hashedPassword => {
+          const user = new User({
+            email: email,
+            password: hashedPassword,
+            status: "user"
+          });
+          return user.save();
+        })
+        .then(user => {
+            res.status(201).json({
+            message: "successfully created a user",
+            user: user
+          });
+          return next()
+        })
+        .catch(err => next(err))
     })
-    .then(hashedPassword => {
-      const user = new User({
-        email: email,
-        password: hashedPassword,
-        status: "user"
-      });
-      return user.save();
-    })
-    .then(result => {
-      transporter.sendMail({
-        from: "sonya@soset.huy",
-        to: email,
-        subject: "Signup successful",
-        html: `<h1>  Здарова, спасибо за регистрацию, ${email} </h1>`
-      });
-      return res.status(201).json({
-        message: "Successfully created the user",
-        user: result
-      });
-    })
+
     .catch(err => next(err));
 };
 
@@ -77,7 +67,7 @@ exports.postLogin = (req, res, next) => {
           email: email,
           userId: loadedUser._id.toString()
         },
-        process.env.JWT_SECRET,
+        config.JWT,
         {
           expiresIn: "5h"
         }

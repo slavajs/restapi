@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
 
-const dotenv = require("dotenv").config();
+const config = require('./config');
 
 const app = express();
 
@@ -30,10 +30,12 @@ app.use((error, req, res, next) => {
   console.log(error);
 });
 
+
+mongoose.set("useFindAndModify", false);
 mongoose
-  .connect(
-    process.env.MDB_STRING,
-    { useNewUrlParser: true, dbName: "apiproject" }
-  )
+  .connect(config.MDB_STRING, {
+    useNewUrlParser: true,
+    dbName: "apiproject"
+  })
   .then(result => app.listen(80))
   .catch(err => console.log(err));

@@ -6,10 +6,6 @@ const tokenSchema = new Schema({
     email: {
         type: String,
         required: true
-    },
-    value: {
-        type: String,
-        required: true
     }
 });
 
