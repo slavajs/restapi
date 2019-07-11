@@ -24,7 +24,7 @@ const userSchema = new Schema({
     type: String,
     default: "user"
   },
-  isAuthEmail: {
+  emailAuth: {
     isAuth: {
       type: Boolean,
       required: false,

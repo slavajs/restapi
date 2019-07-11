@@ -57,9 +57,9 @@ exports.postPost = (req, res, next) => {
   const post = new Post({
     title: title,
     mainText: mainText,
-    author: authorId,
+    author: authorId
   });
-  
+
   return post
     .save()
     .then(post => {

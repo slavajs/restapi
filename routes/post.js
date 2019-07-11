@@ -5,6 +5,8 @@ const path = require("path");
 
 const isAuth = require("../middleware/isAuth");
 const isCreator = require("../middleware/isCreator");
+const isEmailAuth = require('../middleware/isEmailAuth');
+
 const multer = require("multer");
 
 const diskStorage = multer.diskStorage({
@@ -24,7 +26,7 @@ const router = express.Router();
 
 router.get("/posts", postController.getPosts);
 
-router.post("/post", isAuth, upload.single("photos"), postController.postPost);
+router.post("/post", isAuth, upload.single("photos"), isEmailAuth, postController.postPost);
 
 router.get("/post/:postId", postController.getPost);
 

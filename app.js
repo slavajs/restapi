@@ -25,11 +25,11 @@ app.use("/auth", authRoutes);
 app.use(supportRoutes);
 
 app.use((error, req, res, next) => {
+  console.log(error)
   res.status(error.statusCode || 500).json({
     message: error.message,
     status: error.statusCode
   });
-  console.log(error);
 });
 
 mongoose.set("useFindAndModify", false);
