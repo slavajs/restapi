@@ -1,6 +1,6 @@
 const sendgrid = require("nodemailer-sendgrid-transport");
-const nodemailer = require('nodemailer');
-const config = require('../config');
+const nodemailer = require("nodemailer");
+const config = require("../config");
 
 const transporter = nodemailer.createTransport(
   sendgrid({
@@ -15,14 +15,21 @@ module.exports = (req, res, next) => {
   const topic = req.body.topic;
   const text = req.body.text;
 
-  return transporter.sendMail({
-    from: "mysite@mail.ru",
-    to: "support@slavajs.com",
-    subject: "Support",
-    html: `
-   <h1> ${topic}</h1>
-   <p> From: ${conctactEmail}</p>
-   <p>  Problem: ${text}</p>
-   `
-  });
+  transporter
+    .sendMail({
+      from: "slavajs@slava.com",
+      to: "dimaidiothack@gmail.com",
+      subject: "Support",
+      html: `
+        <h1> ${topic}</h1>
+        <p> From: ${contactEmail}</p>
+        <p>  Problem: ${text}</p>
+        `
+    })
+    .then(result => {
+      return res.status(200).json({
+        message: "Successfully sent message to support"
+      });
+    })
+    .catch(err => next(err));
 };

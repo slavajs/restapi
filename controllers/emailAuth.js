@@ -27,24 +27,22 @@ exports.createToken = (req, res, next) => {
           user.emailAuth.tokenId = tok._id.toString();
           return user.save();
         })
-        .catch(err => next(err))
         .then(user => {
-          console.log(
-            "http://localhost:80/auth/email/" + user.emailAuth.tokenId
-          );
-          transporter.sendMail({
-            from: "slavajs@slava.com",
-            to: user.email,
-            subject: "Sign Up",
-            html: `<h1>Thanks for registration</h1>
+          transporter
+            .sendMail({
+              from: "slavajs@slava.com",
+              to: user.email,
+              subject: "Sign Up",
+              html: `<h1>Thanks for registration</h1>
        <p> <a href = ${"http://localhost:80/auth/email/" +
          user.emailAuth.tokenId} > Please, confirm your email</a></p>`
-          });
+            })
+            .catch(err => next(err));
         })
         .then(mes => console.log(mes))
         .catch(err => next(err));
     })
-    .catch(err => console.log(err));
+    .catch(err => next(err));
 };
 
 exports.checkAuthEmail = (req, res, next) => {
@@ -59,20 +57,23 @@ exports.checkAuthEmail = (req, res, next) => {
         .then(user => {
           if (user) {
             user.emailAuth.isAuth = true;
+            user.emailAuth.tokenId = null;
           } else {
             throw new Error("User not found");
           }
-
           return user.save();
         })
         .then(user => {
-          token.remove();
-          res.status(200).json({
-            message: "Email was verified",
-            user: user
-          });
-        })
-        .catch(err => next(err));
+          token
+            .remove()
+            .then(tok => {
+              return res.status(200).json({
+                mssage: "Email was verified",
+                user: user
+              });
+            })
+            .catch(err => next(err));
+        });
     })
     .catch(err => next(err));
 };

@@ -34,7 +34,7 @@ exports.postSignup = (req, res, next) => {
             message: "successfully created a user",
             user: user
           });
-          return next()
+           next()
         })
         .catch(err => next(err))
     })
